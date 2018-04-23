@@ -1,0 +1,14 @@
+sudo: false
+language: python
+python: 3.4
+script:
+- "./script/test"
+- "./script/build"
+deploy:
+  provider: pypi
+  skip_cleanup: true
+  user: bigclownlabs
+  password:
+    secure: K/4pN01tyWyq6SRk3Z7dlwvEeRbilkbTxpuHF6bWIXNR0QSw6R4czRnWNJw2IfBOEaZ2j46fEqF5IW4ZDRzvZaBOhozQfrxNg5gsc462vB185HCnsC9yT4kI27QpHjKJWlIfVczv7JDjyKec9UywU3f+MFm04PgCzKBMFD5DClUPeXoXcb6Js8JgwIDJk6+vSsIIBnLRXu0vPb8wPHj1URPH/7Dh+cl9KiLEnDkKJpuyKKxy3B4AHd/DlAOLzDhYnHEIB9Vdpd1JsI6rpT6n5iPaftCnAukYS+WzImZpYGbeTGC/eRew4MLW+jZM4jm7E7dvIjUp44TzjRcN7PIstyTTzvRb2On+kKTueWlz8xTd59xIVW4Ntbjxw4i1yZCZyrrBdXFJLXRJCe43rkUKYqjZEzLp9sRvsp5v6sVBclFOKDnOQfFSaWwOcRixifol74hmddEiZ90ENtHsB51zL/IL0yqrphXrzCR7sVe7xCD5Mv0fZ1Uz++VwlG+MP2SqAka+uY3tsWgzmrJcXOg3DZpJDm8F1GFPlIIdbUsyqMLLd3WHnvLz1zgdujbFy/w/YBI+E74RHJ9EeJRQEWjS1Ve3bMaE6lsLfr/kYNmp+OFbvgithD7KInJUqWE7+4vzOCD69aY6RGv1kugaoyvKXwEu4YXOt1zk0Z0lnJ/sETM=
+  on:
+    tags: true
