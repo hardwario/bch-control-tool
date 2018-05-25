@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import os
 import sys
@@ -9,7 +10,9 @@ import simplejson as json
 from datetime import datetime
 import paho.mqtt.client
 from paho.mqtt.client import topic_matches_sub
-from bch.mqtt import *
+import bch.node
+import bch.gateway
+from bch.mqtt_client import MqttClient
 
 __version__ = '@@VERSION@@'
 
@@ -19,9 +22,6 @@ logger = logging.getLogger()
 handler = click_log.ClickHandler()
 handler.setFormatter(click_log.ColorFormatter('%(asctime)s %(message)s'))
 logger.addHandler(handler)
-
-userdata = {}
-mqttc = paho.mqtt.client.Client(userdata=userdata)
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
@@ -34,26 +34,15 @@ mqttc = paho.mqtt.client.Client(userdata=userdata)
 @click.option('--mqtt-certfile', type=click.Path(exists=True), help="MQTT certfile.")
 @click.option('--mqtt-keyfile', type=click.Path(exists=True), help="MQTT keyfile.")
 @click_log.simple_verbosity_option(logger, default='WARNING')
-def main(gateway, mqtt_host, mqtt_port, mqtt_username, mqtt_password, mqtt_cafile, mqtt_certfile, mqtt_keyfile):
+@click.pass_context
+def cli(ctx, gateway, mqtt_host, mqtt_port, mqtt_username, mqtt_password, mqtt_cafile, mqtt_certfile, mqtt_keyfile):
 
-    if mqtt_username:
-        self.mqttc.username_pw_set(username, password)
-
-    if mqtt_cafile:
-        self.mqttc.tls_set(mqtt_cafile, mqtt_certfile, mqtt_keyfile)
-
-    logging.info('MQTT broker host: %s, port: %d, use tls: %s', mqtt_host, mqtt_port, bool(mqtt_cafile))
-
-    mqttc.connect(mqtt_host, mqtt_port, keepalive=10)
-    mqttc.on_connect = mqtt_on_connect
-    mqttc.on_disconnect = mqtt_on_disconnect
-    mqttc.on_message = mqtt_on_message
-
-    userdata['gateway'] = gateway
+    ctx.obj['mqttc'] = MqttClient(mqtt_host, mqtt_port, mqtt_username, mqtt_password, mqtt_cafile, mqtt_certfile, mqtt_keyfile)
+    ctx.obj['gateway'] = gateway
     # mqttc.reconnect()
 
 
-@main.command()
+@cli.command()
 @click.option('--start', 'command', flag_value='start')
 @click.option('--stop', 'command', flag_value='stop')
 @click.pass_context
@@ -67,24 +56,26 @@ def pairing(ctx, command):
     msg.wait_for_publish()
 
 
-@main.command()
+@cli.command()
 @click.argument('topic', type=click.STRING)
 @click.argument('payload', type=click.STRING, required=False)
-def pub(topic, payload):
+@click.pass_context
+def pub(ctx, topic, payload):
     if payload:
         try:
             payload = json.loads(payload, use_decimal=True)
         except json.decoder.JSONDecodeError as e:
             pass
-    mqttc.loop_start()
-    msg = mqttc.publish(topic, json.dumps(payload, use_decimal=True), qos=1)
+    mqttc = ctx.obj['mqttc']
+    msg = mqttc.publish(topic, payload, qos=1)
     msg.wait_for_publish()
 
 
-@main.command(help="Subscribe topic.", epilog="TOPIC [default: #]")
+@cli.command(help="Subscribe topic.", epilog="TOPIC [default: #]")
 @click.argument('topic', type=click.STRING, default="#")
 @click.option('-n', '--number', type=click.INT, help="Number of messages.")
-def sub(topic, number):
+@click.pass_context
+def sub(ctx, topic, number):
     def on_message(client, userdata, message):
         dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:22]
         click.echo(dt + ' ' + message.topic + ' ' + message.payload.decode('utf-8'))
@@ -93,11 +84,25 @@ def sub(topic, number):
             sys.exit(0)
 
     on_message.cnt = 0
-    mqttc.on_message = on_message
+
+    mqttc = ctx.obj['mqttc']
+    mqttc.mqttc.on_message = on_message
     mqttc.subscribe(topic)
     mqttc.loop_forever()
 
 
-@main.command(help="Show program's version number and exit.")
+@cli.command(help="Show program's version number and exit.")
 def version():
     click.echo(__version__)
+
+
+cli.add_command(bch.gateway.gw)
+cli.add_command(bch.node.node)
+
+
+def main():
+    cli(obj={})
+
+
+if __name__ == '__main__':
+    main()
