@@ -51,8 +51,10 @@ def pairing(ctx, command):
         click.echo(pairing.get_help(ctx))
         sys.exit(1)
 
+    mqttc = ctx.obj['mqttc']
+    gateway = ctx.obj['gateway']
     mqttc.loop_start()
-    msg = mqttc.publish('gateway/' + userdata['gateway'] + '/pairing-mode/' + command, None, qos=1)
+    msg = mqttc.publish('gateway/' + gateway + '/pairing-mode/' + command, None, qos=1)
     msg.wait_for_publish()
 
 
