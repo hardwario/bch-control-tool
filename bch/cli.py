@@ -26,6 +26,7 @@ logger.addHandler(handler)
 
 @click.group(context_settings=CONTEXT_SETTINGS)
 @click.option('--gateway', type=click.STRING, help="Gateway name [default: usb-dongle].", default="usb-dongle")
+@click.option('--base-topic-prefix', type=click.STRING, help="Base MQTT topic prefix [default: no prefix].", default="")
 @click.option('-H', '--mqtt-host', type=click.STRING, default="127.0.0.1", help="MQTT host to connect to [default: 127.0.0.1].")
 @click.option('-P', '--mqtt-port', type=click.IntRange(0, 65535), default=1883, help="MQTT port to connect to [default: 1883].")
 @click.option('--mqtt-username', type=click.STRING, help="MQTT username.")
@@ -35,10 +36,11 @@ logger.addHandler(handler)
 @click.option('--mqtt-keyfile', type=click.Path(exists=True), help="MQTT keyfile.")
 @click_log.simple_verbosity_option(logger, default='WARNING')
 @click.pass_context
-def cli(ctx, gateway, mqtt_host, mqtt_port, mqtt_username, mqtt_password, mqtt_cafile, mqtt_certfile, mqtt_keyfile):
+def cli(ctx, gateway, base_topic_prefix, mqtt_host, mqtt_port, mqtt_username, mqtt_password, mqtt_cafile, mqtt_certfile, mqtt_keyfile):
 
     ctx.obj['mqttc'] = MqttClient(mqtt_host, mqtt_port, mqtt_username, mqtt_password, mqtt_cafile, mqtt_certfile, mqtt_keyfile)
     ctx.obj['gateway'] = gateway
+    ctx.obj['base_topic_prefix'] = base_topic_prefix
     # mqttc.reconnect()
 
 
@@ -53,8 +55,9 @@ def pairing(ctx, command):
 
     mqttc = ctx.obj['mqttc']
     gateway = ctx.obj['gateway']
+    base_topic_prefix = ctx.obj['base_topic_prefix']
     mqttc.loop_start()
-    msg = mqttc.publish('gateway/' + gateway + '/pairing-mode/' + command, None, qos=1)
+    msg = mqttc.publish(base_topic_prefix + 'gateway/' + gateway + '/pairing-mode/' + command, None, qos=1)
     msg.wait_for_publish()
 
 
