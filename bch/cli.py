@@ -34,6 +34,7 @@ logger.addHandler(handler)
 @click.option('--mqtt-certfile', type=click.Path(exists=True), help="MQTT certfile.")
 @click.option('--mqtt-keyfile', type=click.Path(exists=True), help="MQTT keyfile.")
 @click_log.simple_verbosity_option(logger, default='WARNING')
+@click.version_option(version=__version__)
 @click.pass_context
 def cli(ctx, gateway, mqtt_host, mqtt_port, mqtt_username, mqtt_password, mqtt_cafile, mqtt_certfile, mqtt_keyfile):
 
@@ -91,11 +92,6 @@ def sub(ctx, topic, number):
     mqttc.mqttc.on_message = on_message
     mqttc.subscribe(topic)
     mqttc.loop_forever()
-
-
-@cli.command(help="Show program's version number and exit.")
-def version():
-    click.echo(__version__)
 
 
 cli.add_command(bch.gateway.gw)
