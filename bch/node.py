@@ -8,7 +8,7 @@ from bch.tools import print_table
 def get_nodes(ctx):
     gateway = ctx.obj['gateway']
 
-    response = ctx.obj['mqttc'].command(["gateway", gateway, "nodes/get"], None, ["gateway", gateway, "nodes"])
+    response = ctx.obj['mqttc'].command([ctx.obj['base_topic_prefix'] + "gateway", gateway, "nodes/get"], None, [ctx.obj['base_topic_prefix'] + "gateway", gateway, "nodes"])
 
     return response['payload'] if response else []
 
@@ -55,7 +55,7 @@ def node_rename(ctx, id_or_alias, new_alias):
         return
 
     gateway = ctx.obj['gateway']
-    response = ctx.obj['mqttc'].command(["gateway", gateway, "alias/set"], {"id": node['id'], 'alias': new_alias}, ["gateway", gateway, "alias/set/ok"], timeout=5)
+    response = ctx.obj['mqttc'].command([ctx.obj['base_topic_prefix'] + "gateway", gateway, "alias/set"], {"id": node['id'], 'alias': new_alias}, [ctx.obj['base_topic_prefix'] + "gateway", gateway, "alias/set/ok"], timeout=5)
 
     if not response:
         click.echo("Error, empty response")
@@ -78,7 +78,7 @@ def node_remove(ctx, id_or_alias):
         return
 
     gateway = ctx.obj['gateway']
-    response = ctx.obj['mqttc'].command(["gateway", gateway, "nodes/remove"], node['id'], ["gateway", gateway, "detach"], timeout=5)
+    response = ctx.obj['mqttc'].command([ctx.obj['base_topic_prefix'] + "gateway", gateway, "nodes/remove"], node['id'], [ctx.obj['base_topic_prefix'] + "gateway", gateway, "detach"], timeout=5)
 
     if not response:
         click.echo("Error, empty response")
@@ -101,7 +101,7 @@ def node_remove(ctx, id):
         return
 
     gateway = ctx.obj['gateway']
-    response = ctx.obj['mqttc'].command(["gateway", gateway, "nodes/add"], id, ["gateway", gateway, "attach"], timeout=5)
+    response = ctx.obj['mqttc'].command([ctx.obj['base_topic_prefix'] + "gateway", gateway, "nodes/add"], id, [ctx.obj['base_topic_prefix'] + "gateway", gateway, "attach"], timeout=5)
 
     if not response:
         click.echo("Error, empty response")

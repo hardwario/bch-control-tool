@@ -33,13 +33,15 @@ logger.addHandler(handler)
 @click.option('--mqtt-cafile', type=click.Path(exists=True), help="MQTT cafile.")
 @click.option('--mqtt-certfile', type=click.Path(exists=True), help="MQTT certfile.")
 @click.option('--mqtt-keyfile', type=click.Path(exists=True), help="MQTT keyfile.")
+@click.option('--base-topic-prefix', type=click.STRING, default="", help="MQTT topic prefix [default: ''].")
 @click_log.simple_verbosity_option(logger, default='WARNING')
 @click.version_option(version=__version__)
 @click.pass_context
-def cli(ctx, gateway, mqtt_host, mqtt_port, mqtt_username, mqtt_password, mqtt_cafile, mqtt_certfile, mqtt_keyfile):
+def cli(ctx, gateway, mqtt_host, mqtt_port, mqtt_username, mqtt_password, mqtt_cafile, mqtt_certfile, mqtt_keyfile, base_topic_prefix):
 
     ctx.obj['mqttc'] = MqttClient(mqtt_host, mqtt_port, mqtt_username, mqtt_password, mqtt_cafile, mqtt_certfile, mqtt_keyfile)
     ctx.obj['gateway'] = gateway
+    ctx.obj['base_topic_prefix'] = base_topic_prefix
     # mqttc.reconnect()
 
 
@@ -55,7 +57,7 @@ def pairing(ctx, command):
     mqttc = ctx.obj['mqttc']
     gateway = ctx.obj['gateway']
     mqttc.loop_start()
-    msg = mqttc.publish('gateway/' + gateway + '/pairing-mode/' + command, None, qos=1)
+    msg = mqttc.publish(ctx.obj['base_topic_prefix'] + 'gateway/' + gateway + '/pairing-mode/' + command, None, qos=1)
     msg.wait_for_publish()
 
 
@@ -70,7 +72,7 @@ def pub(ctx, topic, payload):
         except json.decoder.JSONDecodeError as e:
             pass
     mqttc = ctx.obj['mqttc']
-    msg = mqttc.publish(topic, payload, qos=1)
+    msg = mqttc.publish(ctx.obj['base_topic_prefix'] + topic, payload, qos=1)
     msg.wait_for_publish()
 
 
@@ -90,7 +92,7 @@ def sub(ctx, topic, number):
 
     mqttc = ctx.obj['mqttc']
     mqttc.mqttc.on_message = on_message
-    mqttc.subscribe(topic)
+    mqttc.subscribe(ctx.obj['base_topic_prefix'] + topic)
     mqttc.loop_forever()
 
 
