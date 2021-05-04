@@ -1,8 +1,8 @@
 sudo: false
 language: python
 script:
-- "./script/test"
-- "./script/build"
+  - ./test.sh
+  - ./build.sh
 deploy:
   provider: pypi
   skip_cleanup: true

@@ -6,3 +6,4 @@ bch.egg-info/
 .venv/
 *.bin
 .vscode/
+.eggs/
