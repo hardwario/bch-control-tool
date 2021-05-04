@@ -20,7 +20,7 @@ def gw_list(ctx):
 
     mqttc = ctx.obj['mqttc']
     mqttc.on_message = on_message
-    mqttc.subscribe("gateway/+/info")
-    mqttc.publish("gateway/all/info/get")
+    mqttc.subscribe(ctx.obj['base_topic_prefix'] + "gateway/+/info")
+    mqttc.publish(ctx.obj['base_topic_prefix'] + "gateway/all/info/get")
 
     time.sleep(1)
