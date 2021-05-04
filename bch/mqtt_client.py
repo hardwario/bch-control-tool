@@ -25,7 +25,10 @@ class MqttClient:
 
         logging.info('MQTT broker host: %s, port: %d, use tls: %s', host, port, bool(cafile))
 
-        self.mqttc.connect(host, port, keepalive=10)
+        try:
+            self.mqttc.connect(host, port, keepalive=10)
+        except ConnectionRefusedError:
+            raise ConnectionRefusedError(f'MQTT: Connection refused host: {host}, port: {port}, use tls: {bool(cafile)}')
 
         self._response_condition = 0
         self._response_topic = None
