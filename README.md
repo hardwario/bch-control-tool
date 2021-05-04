@@ -21,7 +21,7 @@ sudo pip3 install -U bch
 ## Usage
 
 ```
->>> bch --help
+bch --help
 Usage: bch [OPTIONS] COMMAND [ARGS]...
 
 Options:
@@ -33,6 +33,7 @@ Options:
   --mqtt-cafile PATH             MQTT cafile.
   --mqtt-certfile PATH           MQTT certfile.
   --mqtt-keyfile PATH            MQTT keyfile.
+  --base-topic-prefix TEXT       MQTT topic prefix [default: ''].
   -v, --verbosity LVL            Either CRITICAL, ERROR, WARNING, INFO or
                                  DEBUG
 
@@ -45,6 +46,7 @@ Commands:
   pairing
   pub
   sub      Subscribe topic.
+
 ```
 
 ## License
