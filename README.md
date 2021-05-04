@@ -10,6 +10,13 @@
 
 This repository contains HARDWARIO Control Tool.
 
+## Installing
+
+You can install **bch** directly from PyPI:
+
+```sh
+sudo pip3 install -U bch
+```
 
 ## Usage
 
