@@ -3,22 +3,26 @@
 
 from setuptools import setup, find_packages
 
-requirements = ['Click>=6.0', 'click-log>=0.2.1', 'paho-mqtt>=1.0', 'pyserial>=3.0', 'PyYAML>=3.11', 'simplejson>=3.6.0']
+with open('README.md', encoding='utf-8') as f:
+    long_description = f.read()
+
+with open('requirements.txt', 'r') as f:
+    requirements = f.read()
 
 setup(
     name='bch',
     version='@@VERSION@@',
-    description='BigClown Control Tool',
+    description='HARDWARIO Control Tool',
     author='HARDWARIO s.r.o.',
-    author_email='karel.blavka@bigclown.com',
-    url='https://github.com/bigclownlabs/bch-control-tool',
+    author_email='karel.blavka@hardwario.com',
+    url='https://github.com/hardwario/bch-control-tool',
     packages=['bch'],
     package_dir={'': '.'},
     include_package_data=True,
     install_requires=requirements,
     license='MIT',
     zip_safe=False,
-    keywords=['BigClown', 'BigClownLabs', 'gateway', 'MQTT'],
+    keywords=['HARDWARIO', 'TOWER', 'gateway', 'MQTT'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
@@ -32,11 +36,6 @@ setup(
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
         'Topic :: Communications',
         'Topic :: Internet',
         'Topic :: Utilities',
@@ -46,7 +45,6 @@ setup(
         [console_scripts]
         bch=bch.cli:main
     ''',
-    long_description="""
-BigClown Control Tool.
-"""
+    long_description=long_description,
+    long_description_content_type='text/markdown'
 )
