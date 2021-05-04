@@ -81,7 +81,10 @@ def pub(ctx, topic, payload):
 def sub(ctx, topic, number):
     def on_message(client, userdata, message):
         dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:22]
-        click.echo(dt + ' ' + message.topic + ' ' + message.payload.decode('utf-8'))
+        try:
+            click.echo(dt + ' ' + message.topic + ' ' + message.payload.decode('utf-8'))
+        except Exception:
+            click.echo(dt + ' ' + message.topic + ' ' + repr(message.payload))
         on_message.cnt += 1
         if number and on_message.cnt == number:
             sys.exit(0)
