@@ -99,7 +99,15 @@ cli.add_command(bch.node.node)
 
 
 def main():
-    cli(obj={})
+    try:
+        cli(obj={})
+    except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        logging.error(e)
+        if os.environ.get('DEBUG', False):
+            raise e
+        sys.exit(1)
 
 
 if __name__ == '__main__':
