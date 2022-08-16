@@ -6,7 +6,7 @@ import sys
 import logging
 import click
 import click_log
-import simplejson as json
+import json
 from datetime import datetime
 import paho.mqtt.client
 from paho.mqtt.client import topic_matches_sub
