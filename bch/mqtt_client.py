@@ -70,7 +70,7 @@ class MqttClient:
         payload = message.payload.decode('utf-8')
 
         try:
-            payload = json.loads(payload, use_decimal=True)
+            payload = json.loads(payload)
         except Exception as e:
             raise
             logging.error(e)
@@ -96,7 +96,7 @@ class MqttClient:
         self.loop_start()
         if isinstance(topic, list):
             topic = '/'.join(topic)
-        return self.mqttc.publish(topic, json.dumps(payload, use_decimal=True), qos=qos)
+        return self.mqttc.publish(topic, json.dumps(payload), qos=qos)
 
     def subscribe(self, topic):
         self.mqttc.subscribe(topic)
@@ -116,7 +116,7 @@ class MqttClient:
             self._response = None
             self._response_list = response_list
 
-        msq = self.mqttc.publish(request_topic, json.dumps(request_payload, use_decimal=True), qos=1)
+        msq = self.mqttc.publish(request_topic, json.dumps(request_payload), qos=1)
 
         if response_topic:
             msq.wait_for_publish()

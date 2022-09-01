@@ -68,7 +68,7 @@ def pairing(ctx, command):
 def pub(ctx, topic, payload):
     if payload:
         try:
-            payload = json.loads(payload, use_decimal=True)
+            payload = json.loads(payload)
         except json.decoder.JSONDecodeError as e:
             pass
     mqttc = ctx.obj['mqttc']
